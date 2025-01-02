@@ -1,0 +1,10 @@
+app:
+	name: OJ
+	port: ":3000"
+
+database:
+	host: localhost
+	port: 5432
+	user: postgres
+	password: 246266262
+	name: oj
