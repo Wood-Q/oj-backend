@@ -5,6 +5,7 @@ go 1.22.0
 require (
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/gofiber/fiber/v2 v2.52.6
+	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/spf13/viper v1.19.0
 	github.com/swaggo/swag v1.16.4
 	gorm.io/driver/postgres v1.5.11

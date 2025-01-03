@@ -1,26 +1,28 @@
 package databases
+
 import (
 	"fmt"
 	"time"
-	"OJ/pkg/global"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-func InitDB() {
-	dsn := "host=localhost user=postgres password=246266262 dbname=postgres port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+// InitDB 初始化数据库连接
+func InitDB(host, user, password, dbname, port string) (*gorm.DB, error) {
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Shanghai", host, user, password, dbname, port)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		fmt.Printf("failed to connect to database:%v", err)
+		return nil, fmt.Errorf("failed to connect to database: %v", err)
 	}
+
 	sqlDB, err := db.DB()
+	if err != nil {
+		return nil, fmt.Errorf("failed to configure database: %v", err)
+	}
+
 	sqlDB.SetMaxIdleConns(10)
 	sqlDB.SetMaxOpenConns(100)
 	sqlDB.SetConnMaxLifetime(time.Hour)
-	if err != nil {
-		fmt.Printf("failed to connect to database:%v", err)
 
-	}
-	fmt.Println("Database connection successfully established")
-	global.Db = db
+	return db, nil
 }

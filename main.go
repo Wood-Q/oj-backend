@@ -2,7 +2,7 @@ package main
 
 import (
 	"OJ/pkg/configs"
-	// "OJ/pkg/routes"
+	"OJ/pkg/routes"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -17,6 +17,7 @@ func main() {
 		AllowMethods: "GET, POST, PUT, DELETE, OPTIONS",
 		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
 	}))
+	routes.PublicRoutes(app)
 	// routes.Setup(app)
 	app.Listen(configs.AppConfig.App.Port)
 }

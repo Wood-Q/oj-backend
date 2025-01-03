@@ -1,7 +1,7 @@
 package configs
 
 import (
-	"OJ/platform/cache"
+	"OJ/pkg/global"
 	"OJ/platform/databases"
 	"log"
 
@@ -20,6 +20,12 @@ type Config struct {
 		Password string
 		Name     string
 	}
+	JWT struct {
+		Secret        string
+		MinExpire     string
+		RefreshKey    string
+		RefreshExpire string
+	}
 }
 
 var AppConfig *Config
@@ -27,18 +33,26 @@ var AppConfig *Config
 func InitConfig() {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yml")
-	viper.AddConfigPath("./config")
+	viper.AddConfigPath("./pkg/configs")
 
 	if err := viper.ReadInConfig(); err != nil {
 		log.Fatalf("Error reading config file:%v", err)
 	}
 
 	AppConfig = &Config{}
-
 	if err := viper.Unmarshal(AppConfig); err != nil {
 		log.Fatalf("Unable to decode into struct: %v", err)
 	}
 
-	cache.InitRedis()
-	databases.InitDB()
+	// 初始化 Redis
+	//cache.InitRedis()
+
+	// 使用 AppConfig 中的配置初始化数据库
+	db, err := databases.InitDB(AppConfig.Database.Host, AppConfig.Database.User, AppConfig.Database.Password, AppConfig.Database.Name, AppConfig.Database.Port)
+	if err != nil {
+		log.Fatalf("Error initializing database: %v", err)
+	}
+
+	// 将 db 赋值到 global 包中的 Db 变量（假设 global 包已经正确初始化）
+	global.Db = db
 }
