@@ -25,11 +25,11 @@ import (
 func main() {
 	configs.InitConfig()
 	app := fiber.New()
-	app.Use(cors.New())
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "*",
+		AllowOrigins: "http://localhost:8080",
 		AllowMethods: "GET, POST, PUT, DELETE, OPTIONS",
 		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
+		AllowCredentials: true,  
 	}))
 	routes.PublicRoutes(app)
 	routes.SwaggerRoute(app)
