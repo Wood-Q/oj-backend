@@ -12,6 +12,7 @@ func PublicRoutes(a *fiber.App) {
 
 	route.Post("/auth/sign/up", controllers.UserSignUp)
 	route.Post("/auth/sign/in", controllers.UserSignIn)
+	// route.Get("/auth/loginUser", controllers.GetLoginUser)
 
 	route.Get("/users", controllers.GetUsers)
 	route.Get("/users/:id", controllers.GetUserById)
