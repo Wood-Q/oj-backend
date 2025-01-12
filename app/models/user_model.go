@@ -8,7 +8,7 @@ type User struct {
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
 	DeletedAt    time.Time `gorm:"index"`
-	UserAccount  string    `json:"user_account" grom:"comment:'用户账户'"`
+	UserAccount  string    `json:"user_account" grom:"index;comment:'用户账户'"`
 	UserPassword string    `json:"password" grom:"comment:'用户密码'"`
 	UnionId      string    `json:"unionid" gorm:"'微信开放平台id'"`
 	MpOpenId     string    `json:"openid" gorm:"'公众号openid'"`

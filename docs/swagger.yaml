@@ -1,5 +1,63 @@
 basePath: /api
 definitions:
+  models.Question:
+    properties:
+      acceptednum:
+        type: integer
+      answer:
+        type: string
+      content:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        type: string
+      id:
+        description: gorm.Model
+        type: integer
+      judgeCase:
+        type: string
+      judgeConfig:
+        type: string
+      question_id:
+        type: integer
+      submitnum:
+        type: integer
+      tags:
+        type: string
+      title:
+        type: string
+      updatedAt:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  models.QuestionSubmit:
+    properties:
+      code:
+        type: string
+      content:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        type: string
+      id:
+        description: gorm.Model
+        type: integer
+      judgeInfo:
+        type: string
+      language:
+        type: string
+      question_id:
+        type: integer
+      status:
+        type: string
+      updatedAt:
+        type: string
+      user_id:
+        type: integer
+    type: object
   models.User:
     properties:
       createdAt:
@@ -40,7 +98,7 @@ info:
   title: API
   version: "1.0"
 paths:
-  /v1/auth/loginUser:
+  /api/v1/auth/loginUser:
     get:
       consumes:
       - application/json
@@ -55,7 +113,7 @@ paths:
       summary: get current login user
       tags:
       - Auth
-  /v1/auth/sign/in:
+  /api/v1/auth/sign/in:
     post:
       consumes:
       - application/json
@@ -83,7 +141,7 @@ paths:
       summary: auth user and return access and refresh token
       tags:
       - Auth
-  /v1/auth/sign/up:
+  /api/v1/auth/sign/up:
     post:
       consumes:
       - application/json
@@ -117,7 +175,274 @@ paths:
       summary: create a new user
       tags:
       - Auth
-  /v1/users:
+  /api/v1/questions:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of all existing questions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Question'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: error
+      summary: Get all questions
+      tags:
+      - Questions
+    post:
+      consumes:
+      - application/json
+      description: Create a new question with the provided data
+      parameters:
+      - description: Question Information
+        in: body
+        name: question
+        required: true
+        schema:
+          $ref: '#/definitions/models.Question'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Question'
+        "400":
+          description: Bad Request
+          schema:
+            type: error
+        "500":
+          description: Internal Server Error
+          schema:
+            type: error
+      summary: Create a new question
+      tags:
+      - Questions
+  /api/v1/questions/{question_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a specific question based on its ID
+      parameters:
+      - description: Question ID
+        in: path
+        name: question_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Question'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: error
+      summary: Delete a question by ID
+      tags:
+      - Questions
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a question by its ID
+      parameters:
+      - description: Question ID
+        in: path
+        name: question_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Question'
+        "404":
+          description: Not Found
+          schema:
+            type: error
+        "500":
+          description: Internal Server Error
+          schema:
+            type: error
+      summary: Get a specific question by ID
+      tags:
+      - Questions
+    put:
+      consumes:
+      - application/json
+      description: Update a question based on its ID
+      parameters:
+      - description: Question ID
+        in: path
+        name: question_id
+        required: true
+        type: string
+      - description: Updated Question Information
+        in: body
+        name: question
+        required: true
+        schema:
+          $ref: '#/definitions/models.Question'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Question'
+        "400":
+          description: Bad Request
+          schema:
+            type: error
+        "404":
+          description: Not Found
+          schema:
+            type: error
+        "500":
+          description: Internal Server Error
+          schema:
+            type: error
+      summary: Update an existing question
+      tags:
+      - Questions
+  /api/v1/questionsubmit:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of all existing question submissions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.QuestionSubmit'
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get all question submissions
+      tags:
+      - QuestionSubmits
+    post:
+      consumes:
+      - application/json
+      description: Create a new question submission with the provided data
+      parameters:
+      - description: Question Submit Information
+        in: body
+        name: questionSubmit
+        required: true
+        schema:
+          $ref: '#/definitions/models.QuestionSubmit'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.QuestionSubmit'
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Create a new question submit
+      tags:
+      - QuestionSubmits
+  /api/v1/questionsubmit/{question_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a specific question submission based on its ID
+      parameters:
+      - description: Question ID
+        in: path
+        name: question_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.QuestionSubmit'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: error
+      summary: Delete a question submission by ID
+      tags:
+      - QuestionSubmits
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a question submission by its ID
+      parameters:
+      - description: Question ID
+        in: path
+        name: question_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.QuestionSubmit'
+        "404":
+          description: Not Found
+          schema: {}
+      summary: Get a specific question submission by ID
+      tags:
+      - QuestionSubmits
+    put:
+      consumes:
+      - application/json
+      description: Update a question submission based on its ID
+      parameters:
+      - description: Question ID
+        in: path
+        name: question_id
+        required: true
+        type: string
+      - description: Updated QuestionSubmit Information
+        in: body
+        name: questionSubmit
+        required: true
+        schema:
+          $ref: '#/definitions/models.QuestionSubmit'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.QuestionSubmit'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Update an existing question submission
+      tags:
+      - QuestionSubmits
+  /api/v1/users:
     get:
       consumes:
       - application/json
@@ -134,7 +459,7 @@ paths:
       summary: get all exists users
       tags:
       - Users
-  /v1/users/{id}:
+  /api/v1/users/{id}:
     get:
       consumes:
       - application/json

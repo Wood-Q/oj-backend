@@ -20,7 +20,7 @@ import (
 // @Param password body string true "Password"
 // @Param user_role body string true "UserRole"
 // @Success 200 {object} models.User
-// @Router /v1/auth/sign/up [post]
+// @Router /api/v1/auth/sign/up [post]
 func UserSignUp(c *fiber.Ctx) error {
 	//解析请求体
 	signUp := &models.SignUp{}
@@ -31,12 +31,7 @@ func UserSignUp(c *fiber.Ctx) error {
 		})
 	}
 	//数据库迁移
-	if err := global.Db.AutoMigrate(&models.User{}); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error":   true,
-			"message": err.Error(),
-		})
-	}
+	utils.SetupDatabase(c, models.User{})
 	//请求体解析为user结构体内容
 	user := models.User{
 		UserAccount:  signUp.UserAccount,
@@ -68,7 +63,7 @@ func UserSignUp(c *fiber.Ctx) error {
 // @Param user_account body string true "UserAccount"
 // @Param password body string true "UserPassword"
 // @Success 200 {string} status "ok"
-// @Router /v1/auth/sign/in [post]
+// @Router /api/v1/auth/sign/in [post]
 func UserSignIn(c *fiber.Ctx) error {
 	//解析请求体
 	signIn := &models.SignIn{}
@@ -79,12 +74,7 @@ func UserSignIn(c *fiber.Ctx) error {
 		})
 	}
 	//数据库迁移
-	if err := global.Db.AutoMigrate(&models.User{}); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error":   true,
-			"message": err.Error(),
-		})
-	}
+	utils.SetupDatabase(c, models.User{})
 	// 查找用户是否存在
 	var foundedUser models.User // 定义一个变量用来存储查询到的用户
 	if err := global.Db.Where("user_account=?", signIn.UserAccount).First(&foundedUser).Error; err != nil {
@@ -160,7 +150,7 @@ func UserSignIn(c *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Success 200 {object} models.User
-// @Router /v1/auth/loginUser [get]
+// @Router /api/v1/auth/loginUser [get]
 func GetLoginUser(c *fiber.Ctx) error {
 	user_account := c.Cookies("user_account")
 

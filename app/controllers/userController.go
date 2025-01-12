@@ -15,7 +15,7 @@ import (
 // @Produce json
 // @Param id path string true "user ID"
 // @Success 200 {object} models.User
-// @Router /v1/users/{id} [get]
+// @Router /api/v1/users/{id} [get]
 func GetUserById(c *fiber.Ctx) error {
 	var user models.User
 	id := c.Params("id")
@@ -37,7 +37,7 @@ func GetUserById(c *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Success 200 {array} models.User
-// @Router /v1/users [get]
+// @Router /api/v1/users [get]
 func GetUsers(c *fiber.Ctx) error {
 	var users []models.User
 	if err := global.Db.Find(&users).Error; err != nil {
