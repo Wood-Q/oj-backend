@@ -22,7 +22,7 @@ type Config struct {
 	}
 	JWT struct {
 		Secret        string
-		MinExpire     string
+		MinExpires     string
 		RefreshKey    string
 		RefreshExpire string
 	}

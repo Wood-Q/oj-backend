@@ -45,7 +45,7 @@ func generateNewAccessToken(id string) (string, error) {
 	secret := configs.AppConfig.JWT.Secret
 
 	// Set expires minutes count for secret key from .env file.
-	minutesCount, _ := strconv.Atoi(configs.AppConfig.JWT.MinExpire)
+	minutesCount, _ := strconv.Atoi(configs.AppConfig.JWT.MinExpires)
 
 	// Create a new claims.
 	claims := jwt.MapClaims{}

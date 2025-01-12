@@ -2,7 +2,10 @@ package utils
 
 import (
 	"OJ/pkg/configs"
+	"strconv"
 	"strings"
+
+	"github.com/gofiber/fiber/v2/log"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
@@ -10,14 +13,15 @@ import (
 
 // TokenMetadata struct to describe metadata in JWT.
 type TokenMetadata struct {
-	UserID  uint64
-	Expires int64
+	UserID  string
+	Expires float64
 }
 
 // ExtractTokenMetadata func to extract metadata from JWT.
 func ExtractTokenMetadata(c *fiber.Ctx) (*TokenMetadata, error) {
-	token, err := verifyToken(c)
+	token, err := VerifyToken(c)
 	if err != nil {
+		log.Info("报错", err)
 		return nil, err
 	}
 
@@ -25,10 +29,23 @@ func ExtractTokenMetadata(c *fiber.Ctx) (*TokenMetadata, error) {
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if ok && token.Valid {
 		// User ID.
-		userID := uint64(claims["id"].(float64))
+		userID := claims["id"].(string)
 
-		// Expires time.
-		expires := int64(claims["exp"].(float64))
+		var expires float64
+		switch v := claims["exp"].(type) {
+		case float64:
+			expires = v
+		case string:
+			expiresVal, err := strconv.ParseFloat(v, 64)
+			if err != nil {
+				log.Info("无法转换 exp 字段:", err)
+				return nil, err
+			}
+			expires = expiresVal
+		default:
+			log.Info("exp 字段类型无效")
+			return nil, err
+		}
 
 		return &TokenMetadata{
 			UserID:  userID,
@@ -39,26 +56,21 @@ func ExtractTokenMetadata(c *fiber.Ctx) (*TokenMetadata, error) {
 	return nil, err
 }
 
-func extractToken(c *fiber.Ctx) string {
+func ExtractToken(c *fiber.Ctx) string {
 	bearToken := c.Get("Authorization")
 
-	// Normally Authorization HTTP header.
-	onlyToken := strings.Split(bearToken, " ")
-	if len(onlyToken) == 2 {
-		return onlyToken[1]
-	}
+	cleanedToken := strings.Trim(bearToken, "[]")
 
-	return ""
+	return cleanedToken
 }
 
-func verifyToken(c *fiber.Ctx) (*jwt.Token, error) {
-	tokenString := extractToken(c)
+func VerifyToken(c *fiber.Ctx) (*jwt.Token, error) {
+	tokenString := ExtractToken(c)
 
 	token, err := jwt.Parse(tokenString, jwtKeyFunc)
 	if err != nil {
 		return nil, err
 	}
-
 	return token, nil
 }
 

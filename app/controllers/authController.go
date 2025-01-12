@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/log"
 	"gorm.io/gorm"
 )
 
@@ -106,12 +107,12 @@ func UserSignIn(c *fiber.Ctx) error {
 		})
 	}
 
-	c.Cookie(&fiber.Cookie{
-		Name:     "user_account",
-		Value:    foundedUser.UserAccount,
-		Expires:  time.Now().Add(72 * time.Hour),
-		SameSite: fiber.CookieSameSiteStrictMode, // 强化跨站请求的安全性
-	})
+	// c.Cookie(&fiber.Cookie{
+	// 	Name:     "user_account",
+	// 	Value:    foundedUser.UserAccount,
+	// 	Expires:  time.Now().Add(72 * time.Hour),
+	// 	SameSite: fiber.CookieSameSiteStrictMode, // 强化跨站请求的安全性
+	// })
 
 	c.Cookie(&fiber.Cookie{
 		Name:     "token",
@@ -141,10 +142,15 @@ func UserSignIn(c *fiber.Ctx) error {
 // @Success 200 {object} models.User
 // @Router /api/v1/auth/loginUser [get]
 func GetLoginUser(c *fiber.Ctx) error {
-	user_account := c.Cookies("user_account")
+	// user_account := c.Cookies("user_account")
+	claims, err := utils.ExtractTokenMetadata(c)
+	log.Info("claims是", claims.UserID)
+	if err != nil {
+		log.Info("报错", err)
+	}
 
 	var user models.User
-	if err := global.Db.Where("user_account=?", user_account).First(&user).Error; err != nil {
+	if err := global.Db.Where("user_account=?", claims.UserID).First(&user).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error":   true,
 			"message": err.Error(),
