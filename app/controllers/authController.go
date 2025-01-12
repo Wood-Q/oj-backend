@@ -32,12 +32,14 @@ func UserSignUp(c *fiber.Ctx) error {
 	}
 	//数据库迁移
 	utils.SetupDatabase(c, models.User{})
+	HashedPassword := utils.GeneratePassword(signUp.Password)
 	//请求体解析为user结构体内容
 	user := models.User{
 		UserAccount:  signUp.UserAccount,
-		UserPassword: signUp.Password,
+		UserPassword: HashedPassword,
 		UserRole:     signUp.UserRole,
 	}
+
 	//创建用户
 	if err := global.Db.Create(&user).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -87,6 +89,12 @@ func UserSignIn(c *fiber.Ctx) error {
 			"error": "查询用户时出错",
 		})
 	}
+	//验证密码
+	if !utils.ComparePasswords(foundedUser.UserPassword, signIn.Password) {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "密码错误",
+		})
+	}
 
 	//生成token
 	tokens, err := utils.GenerateNewTokens(foundedUser.UserAccount)
@@ -105,6 +113,13 @@ func UserSignIn(c *fiber.Ctx) error {
 		SameSite: fiber.CookieSameSiteStrictMode, // 强化跨站请求的安全性
 	})
 
+	c.Cookie(&fiber.Cookie{
+		Name:     "token",
+		Value:    tokens.Access,
+		Expires:  time.Now().Add(72 * time.Hour),
+		SameSite: fiber.CookieSameSiteStrictMode, // 强化跨站请求的安全性
+	})
+
 	//返回200
 	return c.JSON(fiber.Map{
 		"error": false,
@@ -116,32 +131,6 @@ func UserSignIn(c *fiber.Ctx) error {
 	})
 
 }
-
-// func GetLoginUser(c *fiber.Ctx) error {
-// 	tokenData, err := utils.ExtractTokenMetadata(c)
-// 	if err != nil {
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-// 			"error":   true,
-// 			"token":   tokenData,
-// 			"message": err.Error(),
-// 		})
-// 	}
-// 	userID := tokenData.UserID
-
-// 	var user models.User
-// 	if err := global.Db.Where("id=?", userID).First(&user).Error; err != nil {
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-// 			"error":   true,
-// 			"message": err.Error(),
-// 		})
-// 	}
-// 	return c.Status(200).JSON(fiber.Map{
-// 		"error": false,
-// 		"msg":   nil,
-// 		"user":  user,
-// 	})
-
-// }
 
 // GetLoginUser to parse jwt and get the login user
 // @Description get current login user .

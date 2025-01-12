@@ -1,13 +1,13 @@
 package main
 
 import (
+	_ "OJ/docs" // load API Docs files (Swagger)
 	"OJ/pkg/configs"
 	"OJ/pkg/routes"
 
-	_ "OJ/docs" // load API Docs files (Swagger)
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
 // @title API
@@ -25,6 +25,12 @@ import (
 func main() {
 	configs.InitConfig()
 	app := fiber.New()
+
+	app.Use(logger.New(logger.Config{
+		Format:     "[${time}] ${status} - ${method} ${path} - ${latency}\n",
+		TimeFormat: "2006-01-02 15:04:05",
+		TimeZone:   "Local",
+	}))
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     "http://localhost:8080",
 		AllowMethods:     "GET, POST, PUT, DELETE, OPTIONS",
