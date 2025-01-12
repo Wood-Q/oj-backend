@@ -23,6 +23,29 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/v1/auth/loginUser": {
+            "get": {
+                "description": "get current login user .",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "get current login user",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/auth/sign/in": {
             "post": {
                 "description": "Auth user and return access and refresh token.",
@@ -33,7 +56,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "User"
+                    "Auth"
                 ],
                 "summary": "auth user and return access and refresh token",
                 "parameters": [
@@ -76,7 +99,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "User"
+                    "Auth"
                 ],
                 "summary": "create a new user",
                 "parameters": [
@@ -128,7 +151,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "Users"
                 ],
                 "summary": "get all exists users",
                 "responses": {
@@ -154,7 +177,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "Users"
                 ],
                 "summary": "get user by given ID",
                 "parameters": [
@@ -188,6 +211,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
+                    "description": "gorm.Model",
                     "type": "integer"
                 },
                 "openid": {
@@ -202,7 +226,7 @@ const docTemplate = `{
                 "updatedAt": {
                     "type": "string"
                 },
-                "useraccount": {
+                "user_account": {
                     "type": "string"
                 },
                 "useravatar": {

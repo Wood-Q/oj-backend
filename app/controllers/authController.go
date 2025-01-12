@@ -4,6 +4,7 @@ import (
 	"OJ/app/models"
 	"OJ/pkg/global"
 	"OJ/pkg/utils"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
@@ -12,7 +13,7 @@ import (
 // UserSignUp method to create a new user.
 // @Description Create a new user.
 // @Summary create a new user
-// @Tags User
+// @Tags Auth
 // @Accept json
 // @Produce json
 // @Param user_account body string true "UserAccount"
@@ -61,7 +62,7 @@ func UserSignUp(c *fiber.Ctx) error {
 // UserSignIn method to auth user and return access and refresh tokens.
 // @Description Auth user and return access and refresh token.
 // @Summary auth user and return access and refresh token
-// @Tags User
+// @Tags Auth
 // @Accept json
 // @Produce json
 // @Param user_account body string true "UserAccount"
@@ -107,6 +108,13 @@ func UserSignIn(c *fiber.Ctx) error {
 		})
 	}
 
+	c.Cookie(&fiber.Cookie{
+		Name:     "user_account",
+		Value:    foundedUser.UserAccount,
+		Expires:  time.Now().Add(72 * time.Hour),
+		SameSite: fiber.CookieSameSiteStrictMode, // 强化跨站请求的安全性
+	})
+
 	//返回200
 	return c.JSON(fiber.Map{
 		"error": false,
@@ -119,3 +127,54 @@ func UserSignIn(c *fiber.Ctx) error {
 
 }
 
+// func GetLoginUser(c *fiber.Ctx) error {
+// 	tokenData, err := utils.ExtractTokenMetadata(c)
+// 	if err != nil {
+// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+// 			"error":   true,
+// 			"token":   tokenData,
+// 			"message": err.Error(),
+// 		})
+// 	}
+// 	userID := tokenData.UserID
+
+// 	var user models.User
+// 	if err := global.Db.Where("id=?", userID).First(&user).Error; err != nil {
+// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+// 			"error":   true,
+// 			"message": err.Error(),
+// 		})
+// 	}
+// 	return c.Status(200).JSON(fiber.Map{
+// 		"error": false,
+// 		"msg":   nil,
+// 		"user":  user,
+// 	})
+
+// }
+
+// GetLoginUser to parse jwt and get the login user
+// @Description get current login user .
+// @Summary get current login user
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.User
+// @Router /v1/auth/loginUser [get]
+func GetLoginUser(c *fiber.Ctx) error {
+	user_account := c.Cookies("user_account")
+
+	var user models.User
+	if err := global.Db.Where("user_account=?", user_account).First(&user).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error":   true,
+			"message": err.Error(),
+		})
+	}
+	return c.Status(200).JSON(fiber.Map{
+		"error": false,
+		"msg":   nil,
+		"user":  user,
+	})
+
+}

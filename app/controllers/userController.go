@@ -10,7 +10,7 @@ import (
 // Getuser func gets user by given ID or 404 error.
 // @Description Get user by given ID.
 // @Summary get user by given ID
-// @Tags users
+// @Tags Users
 // @Accept json
 // @Produce json
 // @Param id path string true "user ID"
@@ -30,10 +30,10 @@ func GetUserById(c *fiber.Ctx) error {
 	})
 }
 
-// // Getusers func gets all exists users.
+// Getusers func gets all exists users.
 // @Description Get all exists users.
 // @Summary get all exists users
-// @Tags users
+// @Tags Users
 // @Accept json
 // @Produce json
 // @Success 200 {array} models.User

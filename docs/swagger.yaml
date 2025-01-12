@@ -7,6 +7,7 @@ definitions:
       deletedAt:
         type: string
       id:
+        description: gorm.Model
         type: integer
       openid:
         type: string
@@ -16,7 +17,7 @@ definitions:
         type: string
       updatedAt:
         type: string
-      useraccount:
+      user_account:
         type: string
       useravatar:
         type: string
@@ -39,6 +40,21 @@ info:
   title: API
   version: "1.0"
 paths:
+  /v1/auth/loginUser:
+    get:
+      consumes:
+      - application/json
+      description: get current login user .
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+      summary: get current login user
+      tags:
+      - Auth
   /v1/auth/sign/in:
     post:
       consumes:
@@ -66,7 +82,7 @@ paths:
             type: string
       summary: auth user and return access and refresh token
       tags:
-      - User
+      - Auth
   /v1/auth/sign/up:
     post:
       consumes:
@@ -100,7 +116,7 @@ paths:
             $ref: '#/definitions/models.User'
       summary: create a new user
       tags:
-      - User
+      - Auth
   /v1/users:
     get:
       consumes:
@@ -117,7 +133,7 @@ paths:
             type: array
       summary: get all exists users
       tags:
-      - users
+      - Users
   /v1/users/{id}:
     get:
       consumes:
@@ -138,7 +154,7 @@ paths:
             $ref: '#/definitions/models.User'
       summary: get user by given ID
       tags:
-      - users
+      - Users
 securityDefinitions:
   ApiKeyAuth:
     in: header
