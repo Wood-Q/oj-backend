@@ -144,6 +144,12 @@ func UserSignIn(c *fiber.Ctx) error {
 func GetLoginUser(c *fiber.Ctx) error {
 	// user_account := c.Cookies("user_account")
 	claims, err := utils.ExtractTokenMetadata(c)
+	if claims == nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error":   true,
+			"message": "没有token",
+		})
+	}
 	log.Info("claims是", claims.UserID)
 	if err != nil {
 		log.Info("报错", err)

@@ -2,6 +2,7 @@ package routes
 
 import (
 	"OJ/app/controllers"
+	"OJ/pkg/middlewares"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -24,17 +25,21 @@ func PublicUserRoutes(a *fiber.App) {
 
 func PublicQuestionRoutes(a *fiber.App) {
 	route := a.Group("/api/v1/questions")
+	route.Use(middlewares.CheckAuth())
 	route.Get("/", controllers.GetQuestions)
 	route.Get("/:question_id", controllers.GetQuestion)
+	route.Use(middlewares.CheckAdmin())
 	route.Delete("/:question_id", controllers.DeleteQuestion)
 	route.Post("/", controllers.CreateQuestion)
 	route.Put("/:question_id", controllers.UpdateQuestion)
 }
 
 func PublicQuestionSubmitRoutes(a *fiber.App) {
-	route := a.Group("/api/v1/questions")
+	route := a.Group("/api/v1/questionsSubmit")
+	route.Use(middlewares.CheckAuth())
 	route.Get("/", controllers.GetQuestionSubmits)
 	route.Get("/:question_id", controllers.GetQuestionSubmit)
+	route.Use(middlewares.CheckAdmin())
 	route.Delete("/:question_id", controllers.DeleteQuestionSubmit)
 	route.Post("/", controllers.CreateQuestionSubmit)
 	route.Put("/:question_id", controllers.UpdateQuestionSubmit)

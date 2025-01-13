@@ -20,6 +20,7 @@ type TokenMetadata struct {
 // ExtractTokenMetadata func to extract metadata from JWT.
 func ExtractTokenMetadata(c *fiber.Ctx) (*TokenMetadata, error) {
 	token, err := VerifyToken(c)
+
 	if err != nil {
 		log.Info("报错", err)
 		return nil, err
