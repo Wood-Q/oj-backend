@@ -38,9 +38,9 @@ func main() {
 		AllowCredentials: true,
 	}))
 	routes.PublicUserRoutes(app)
+	routes.PublicQuestionSubmitRoutes(app)
 	routes.PublicQuestionRoutes(app)
 	routes.PublicAuthRoutes(app)
-	routes.PublicQuestionSubmitRoutes(app)
 	routes.SwaggerRoute(app)
 	app.Listen(configs.AppConfig.App.Port)
 }

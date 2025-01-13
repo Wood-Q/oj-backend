@@ -46,8 +46,8 @@ func CreateQuestionSubmit(c *fiber.Ctx) error {
 // @Failure 500 {object} error
 // @Router /api/v1/questionsubmit [get]
 func GetQuestionSubmits(c *fiber.Ctx) error {
-	utils.SetupDatabase(c, models.QuestionSubmit{})
 
+	utils.SetupDatabase(c, models.QuestionSubmit{})
 	var questions []models.QuestionSubmit
 	if err := global.Db.Find(&questions).Error; err != nil {
 		return c.Status(500).JSON(fiber.Map{
@@ -83,8 +83,14 @@ func GetQuestionSubmit(c *fiber.Ctx) error {
 		})
 	}
 
+	checkedUser := c.Locals("currentUser")
+	if checkedUser.(*models.User).ID != question.UserID && checkedUser.(*models.User).UserRole != "admin" {
+		return c.Status(401).JSON(fiber.Map{
+			"error": "非提交用户，无法查看",
+		})
+	}
 	return c.Status(200).JSON(fiber.Map{
-		"message":   "QuestionSubmit retrieved successfully",
+		"message":  "QuestionSubmit retrieved successfully",
 		"question": question,
 	})
 }

@@ -39,8 +39,7 @@ func PublicQuestionSubmitRoutes(a *fiber.App) {
 	route.Use(middlewares.CheckAuth())
 	route.Get("/", controllers.GetQuestionSubmits)
 	route.Get("/:question_id", controllers.GetQuestionSubmit)
-	route.Use(middlewares.CheckAdmin())
-	route.Delete("/:question_id", controllers.DeleteQuestionSubmit)
 	route.Post("/", controllers.CreateQuestionSubmit)
+	route.Delete("/:question_id", controllers.DeleteQuestionSubmit)
 	route.Put("/:question_id", controllers.UpdateQuestionSubmit)
 }

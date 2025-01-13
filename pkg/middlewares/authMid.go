@@ -12,13 +12,13 @@ import (
 func CheckAdmin() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		claims, err := utils.ExtractTokenMetadata(c)
-		log.Info("claims是", claims.UserID)
+		// log.Info("claims是", claims.UserID)
 		if claims == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error":   true,
-			"message": "没有token",
-		})
-	}
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":   true,
+				"message": "没有token",
+			})
+		}
 		if err != nil {
 			log.Info("报错", err)
 		}
@@ -43,12 +43,11 @@ func CheckAuth() fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		claims, err := utils.ExtractTokenMetadata(c)
 		if claims == nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error":   true,
-			"message": "没有token",
-		})
-	}
-		log.Info("claims是", claims.UserID)
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error":   true,
+				"message": "没有token",
+			})
+		}
 		if err != nil {
 			log.Info("报错", err)
 		}
@@ -59,6 +58,8 @@ func CheckAuth() fiber.Handler {
 				"message": err.Error(),
 			})
 		}
+		currentUser:=user
+		c.Locals("currentUser",&currentUser)
 		return c.Next()
 	}
 }
