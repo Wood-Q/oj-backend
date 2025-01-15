@@ -150,7 +150,6 @@ func GetLoginUser(c *fiber.Ctx) error {
 			"message": "没有token",
 		})
 	}
-	log.Info("claims是", claims.UserID)
 	if err != nil {
 		log.Info("报错", err)
 	}

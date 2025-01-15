@@ -19,18 +19,24 @@ import (
 // @Failure 500 {error} error
 // @Router /api/v1/questions [post]
 func CreateQuestion(c *fiber.Ctx) error {
-	utils.SetupDatabase(c, models.Question{})
 	var question models.Question
+
 	if err := c.BodyParser(&question); err != nil {
 		return c.Status(400).JSON(fiber.Map{
-			"error": err.Error(),
+			"error":   err.Error(),
+			"message": "解析失败",
 		})
 	}
+	
+	utils.SetupDatabase(c, models.Question{})
+
 	if err := global.Db.Create(&question).Error; err != nil {
 		return c.Status(500).JSON(fiber.Map{
-			"error": err.Error(),
+			"error":   err.Error(),
+			"message": "创建失败",
 		})
 	}
+
 	return c.Status(201).JSON(fiber.Map{
 		"message":  "Question created successfully",
 		"question": question,

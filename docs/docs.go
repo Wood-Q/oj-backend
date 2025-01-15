@@ -623,10 +623,10 @@ const docTemplate = `{
                     "description": "gorm.Model",
                     "type": "integer"
                 },
-                "judgeCase": {
+                "judge_case": {
                     "type": "string"
                 },
-                "judgeConfig": {
+                "judge_config": {
                     "type": "string"
                 },
                 "question_id": {
