@@ -68,9 +68,6 @@ func ExtractToken(c *fiber.Ctx) string {
 func VerifyToken(c *fiber.Ctx) (*jwt.Token, error) {
 	tokenString := ExtractToken(c)
 	token, err := jwt.Parse(tokenString, jwtKeyFunc)
-
-	log.Info("err: ", err)
-	log.Info("token: ", token)
 	if err != nil {
 		return nil, err
 	}

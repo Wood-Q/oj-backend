@@ -4,8 +4,10 @@ import (
 	"OJ/app/models"
 	"OJ/pkg/global"
 	"OJ/pkg/utils"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/log"
 )
 
 // @Summary Create a new question
@@ -84,21 +86,44 @@ func GetQuestionsByPage(c *fiber.Ctx) error {
 	page := c.QueryInt("page", 1)
 	pageSize := c.QueryInt("page_size", 10)
 
+	log.Info(page, pageSize)
+
+	// 获取过滤参数
+	title := c.Query("title", "")
+
+	tags := c.Query("tags", "")
+
 	// 计算分页偏移量
 	offset := (page - 1) * pageSize
 
 	var questions []models.Question
 	var totalCount int64
 
+	// 创建查询构建器
+	db := global.Db.Model(&models.Question{})
+
+	// 如果有标题过滤
+	if title != "" {
+		db = db.Where("title LIKE ?", "%"+title+"%")
+	}
+	if tags != "" {
+		// 将tags从字符串转换为数组
+		tagList := strings.Split(tags, ",")
+		for _, tag := range tagList {
+			// 通过WHERE子句过滤tags字段
+			db = db.Where("tags LIKE ?", "%"+tag+"%")
+		}
+	}
+
 	// 获取总记录数
-	if err := global.Db.Model(&models.Question{}).Count(&totalCount).Error; err != nil {
+	if err := db.Count(&totalCount).Error; err != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"error": err.Error(),
 		})
 	}
 
 	// 获取分页数据
-	if err := global.Db.Limit(pageSize).Offset(offset).Find(&questions).Error; err != nil {
+	if err := db.Limit(pageSize).Offset(offset).Find(&questions).Error; err != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"error": err.Error(),
 		})
