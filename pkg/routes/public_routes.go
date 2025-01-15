@@ -29,6 +29,7 @@ func PublicQuestionRoutes(a *fiber.App) {
 	route.Get("/", controllers.GetQuestions)
 	route.Get("/:question_id", controllers.GetQuestion)
 	route.Use(middlewares.CheckAdmin())
+	route.Get("/dividePage/questions", controllers.GetQuestionsByPage)
 	route.Delete("/:question_id", controllers.DeleteQuestion)
 	route.Post("/", controllers.CreateQuestion)
 	route.Put("/:question_id", controllers.UpdateQuestion)

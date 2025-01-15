@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/log"
 	"gorm.io/gorm"
 )
 
@@ -44,7 +43,7 @@ func UserSignUp(c *fiber.Ctx) error {
 	//创建用户
 	if err := global.Db.Create(&user).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error":   true,
+			"error": true,
 			"message": err.Error(),
 		})
 	}
@@ -107,13 +106,6 @@ func UserSignIn(c *fiber.Ctx) error {
 		})
 	}
 
-	// c.Cookie(&fiber.Cookie{
-	// 	Name:     "user_account",
-	// 	Value:    foundedUser.UserAccount,
-	// 	Expires:  time.Now().Add(72 * time.Hour),
-	// 	SameSite: fiber.CookieSameSiteStrictMode, // 强化跨站请求的安全性
-	// })
-
 	c.Cookie(&fiber.Cookie{
 		Name:     "token",
 		Value:    tokens.Access,
@@ -139,21 +131,20 @@ func UserSignIn(c *fiber.Ctx) error {
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Success 200 {object} models.User
+// @Success 200 {object} any
 // @Router /api/v1/auth/loginUser [get]
 func GetLoginUser(c *fiber.Ctx) error {
-	// user_account := c.Cookies("user_account")
+	// 获取 token 中的 claims
 	claims, err := utils.ExtractTokenMetadata(c)
-	if claims == nil {
+	if err != nil || claims == nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error":   true,
-			"message": "没有token",
+			"message": "token过期或没有token",
+			"user":     nil,
 		})
 	}
-	if err != nil {
-		log.Info("报错", err)
-	}
 
+	// 获取用户信息
 	var user models.User
 	if err := global.Db.Where("user_account=?", claims.UserID).First(&user).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -161,10 +152,12 @@ func GetLoginUser(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
+	
+	// 返回成功响应
 	return c.Status(200).JSON(fiber.Map{
 		"error": false,
 		"msg":   nil,
+		"过期时间为": time.Unix(int64(claims.Expires), 0).String(), // 格式化为正常时间
 		"user":  user,
 	})
-
 }

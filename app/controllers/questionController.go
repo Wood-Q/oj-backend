@@ -27,7 +27,7 @@ func CreateQuestion(c *fiber.Ctx) error {
 			"message": "解析失败",
 		})
 	}
-	
+
 	utils.SetupDatabase(c, models.Question{})
 
 	if err := global.Db.Create(&question).Error; err != nil {
@@ -64,6 +64,52 @@ func GetQuestions(c *fiber.Ctx) error {
 	return c.Status(200).JSON(fiber.Map{
 		"message":   "Questions retrieved successfully",
 		"questions": questions,
+	})
+}
+
+// @Summary Get all questions with pagination
+// @Description Retrieve a paginated list of all existing questions
+// @Tags Questions
+// @Accept json
+// @Produce json
+// @Param page query int false "Page number (default is 1)"
+// @Param page_size query int false "Number of items per page (default is 10)"
+// @Success 200 {object} models.Question
+// @Failure 500 {error} error
+// @Router /api/v1/questions/dividePage/questions [get]
+func GetQuestionsByPage(c *fiber.Ctx) error {
+	utils.SetupDatabase(c, models.Question{})
+
+	// 获取分页参数，默认第一页和每页10条
+	page := c.QueryInt("page", 1)
+	pageSize := c.QueryInt("page_size", 10)
+
+	// 计算分页偏移量
+	offset := (page - 1) * pageSize
+
+	var questions []models.Question
+	var totalCount int64
+
+	// 获取总记录数
+	if err := global.Db.Model(&models.Question{}).Count(&totalCount).Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	// 获取分页数据
+	if err := global.Db.Limit(pageSize).Offset(offset).Find(&questions).Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	return c.Status(200).JSON(fiber.Map{
+		"message":     "Questions retrieved successfully",
+		"questions":   questions,
+		"total_count": totalCount, // 返回总记录数
+		"page":        page,
+		"page_size":   pageSize,
 	})
 }
 
