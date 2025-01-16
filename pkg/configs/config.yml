@@ -14,3 +14,6 @@ jwt:
   minexpires: "3600"
   refreshkey: "refresh"
   refreshexpires: "720"
+
+  sandbox:
+    type: example

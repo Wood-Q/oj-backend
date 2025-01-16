@@ -61,81 +61,30 @@ func GetQuestionSubmits(c *fiber.Ctx) error {
 	})
 }
 
-// @Summary Get a specific question submission by ID
-// @Description Retrieve a question submission by its ID
-// @Tags QuestionSubmits
-// @Accept json
-// @Produce json
-// @Param question_id path string true "Question ID"
-// @Success 200 {object} models.QuestionSubmit
-// @Failure 404 {object} error
-// @Router /api/v1/questionsubmit/{question_id} [get]
-func GetQuestionSubmit(c *fiber.Ctx) error {
-	utils.SetupDatabase(c, models.QuestionSubmit{})
-
-	question_id := c.Params("question_id")
-
+func GetQuestionSubmit(question_id int64) (models.QuestionSubmit, error) {
 	var question models.QuestionSubmit
 
+	// 查询数据库
 	if err := global.Db.Where("question_id = ?", question_id).First(&question).Error; err != nil {
-		return c.Status(404).JSON(fiber.Map{
-			"error": err.Error(),
-		})
+		return question, err
 	}
-
-	checkedUser := c.Locals("currentUser")
-	if checkedUser.(*models.User).ID != question.UserID && checkedUser.(*models.User).UserRole != "admin" {
-		return c.Status(401).JSON(fiber.Map{
-			"error": "非提交用户，无法查看",
-		})
-	}
-	return c.Status(200).JSON(fiber.Map{
-		"message":  "QuestionSubmit retrieved successfully",
-		"question": question,
-	})
+	return question, nil
 }
 
-// @Summary Update an existing question submission
-// @Description Update a question submission based on its ID
-// @Tags QuestionSubmits
-// @Accept json
-// @Produce json
-// @Param question_id path string true "Question ID"
-// @Param questionSubmit body models.QuestionSubmit true "Updated QuestionSubmit Information"
-// @Success 200 {object} models.QuestionSubmit
-// @Failure 400 {object} error
-// @Failure 404 {object} error
-// @Failure 500 {object} error
-// @Router /api/v1/questionsubmit/{question_id} [put]
-func UpdateQuestionSubmit(c *fiber.Ctx) error {
-	utils.SetupDatabase(c, models.QuestionSubmit{})
-
-	question_id := c.Params("question_id")
+func UpdateQuestionSubmit(question_id int64, status string) (models.QuestionSubmit, error) {
 
 	var question models.QuestionSubmit
 	if err := global.Db.Where("question_id = ?", question_id).First(&question).Error; err != nil {
-		return c.Status(404).JSON(fiber.Map{
-			"error": err.Error(),
-		})
+		return question, err
 	}
 
-	// Update fields
-	if err := c.BodyParser(&question); err != nil {
-		return c.Status(400).JSON(fiber.Map{
-			"error": err.Error(),
-		})
-	}
+	question.Status = status
 
 	if err := global.Db.Save(&question).Error; err != nil {
-		return c.Status(500).JSON(fiber.Map{
-			"error": err.Error(),
-		})
+		return question, err
 	}
 
-	return c.Status(200).JSON(fiber.Map{
-		"message":  "QuestionSubmit updated successfully",
-		"question": question,
-	})
+	return question, nil
 }
 
 // @Summary Delete a question submission by ID

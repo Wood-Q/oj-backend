@@ -148,23 +148,14 @@ func GetQuestionsByPage(c *fiber.Ctx) error {
 // @Failure 404 {error} error
 // @Failure 500 {error} error
 // @Router /api/v1/questions/{question_id} [get]
-func GetQuestion(c *fiber.Ctx) error {
-	utils.SetupDatabase(c, models.Question{})
-
-	question_id := c.Params("question_id")
-
+func GetQuestion(question_id int64) (models.Question, error) {
 	var question models.Question
 
+	// 查询数据库
 	if err := global.Db.Where("question_id = ?", question_id).First(&question).Error; err != nil {
-		return c.Status(404).JSON(fiber.Map{
-			"error": err.Error(),
-		})
+		return question, err
 	}
-
-	return c.Status(200).JSON(fiber.Map{
-		"message":  "Question retrieved successfully",
-		"question": question,
-	})
+	return question, nil
 }
 
 // @Summary Update an existing question
