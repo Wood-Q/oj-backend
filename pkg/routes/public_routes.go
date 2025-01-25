@@ -10,7 +10,6 @@ import (
 func PublicAuthRoutes(a *fiber.App) {
 
 	route := a.Group("/api/v1/auth")
-
 	route.Post("/sign/up", controllers.UserSignUp)
 	route.Post("/sign/in", controllers.UserSignIn)
 	route.Get("/loginUser", controllers.GetLoginUser)
@@ -27,11 +26,11 @@ func PublicQuestionRoutes(a *fiber.App) {
 	route := a.Group("/api/v1/questions")
 	route.Use(middlewares.CheckAuth())
 	route.Get("/", controllers.GetQuestions)
-	// route.Get("/:question_id", controllers.GetQuestion)
-	route.Use(middlewares.CheckAdmin())
+	route.Get("/:question_id", controllers.GetQuestionByID)
 	route.Get("/dividePage/questions", controllers.GetQuestionsByPage)
-	route.Delete("/:question_id", controllers.DeleteQuestion)
 	route.Post("/", controllers.CreateQuestion)
+	route.Use(middlewares.CheckAdmin())
+	route.Delete("/:question_id", controllers.DeleteQuestion)
 	route.Put("/:question_id", controllers.UpdateQuestion)
 }
 

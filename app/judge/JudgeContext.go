@@ -12,4 +12,5 @@ type JudgeContext struct {
 	OutputList []string
 
 	Question models.Question
+	QuestionSubmit models.QuestionSubmit
 }

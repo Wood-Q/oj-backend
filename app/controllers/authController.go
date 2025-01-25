@@ -38,12 +38,13 @@ func UserSignUp(c *fiber.Ctx) error {
 		UserAccount:  signUp.UserAccount,
 		UserPassword: HashedPassword,
 		UserRole:     signUp.UserRole,
+		UserName:     signUp.UserName,
 	}
 
 	//创建用户
 	if err := global.Db.Create(&user).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": true,
+			"error":   true,
 			"message": err.Error(),
 		})
 	}
@@ -140,7 +141,7 @@ func GetLoginUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error":   true,
 			"message": "token过期或没有token",
-			"user":     nil,
+			"user":    fiber.Map{"userRole": "notLogin"},
 		})
 	}
 
@@ -152,7 +153,7 @@ func GetLoginUser(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
-	
+
 	// 返回成功响应
 	return c.Status(200).JSON(fiber.Map{
 		"error": false,

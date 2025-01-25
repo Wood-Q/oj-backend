@@ -30,11 +30,14 @@ type QuestionSubmit struct {
 	// CreatedAt  time.Time
 	// UpdatedAt  time.Time
 	// DeletedAt  time.Time `gorm:"index"`
-	QuestionID uint   `json:"question_id" gorm:"index;comment:'题目id'"`
-	Content    string `json:"content" gorm:"comment:'提交内容'"`
-	Language   string `json:"language" gorm:"comment:'提交语言'"`
-	UserID     uint   `json:"user_id" gorm:"index;comment:'提交用户id'"`
-	Status     string `json:"status" gorm:"comment:'判题状态'"`
-	JudgeInfo  string `json:"judgeInfo" gorm:"comment:'判题信息'"`
-	Code       string `json:"code" gorm:"comment:'提交代码'"`
+	QuestionID  int    `json:"question_id"`
+	Language    string `json:"language"`
+	Code        string `json:"code"`
+	Status      string `json:"status"`
+	ExitStatus  int    `json:"exit_status"`
+	Time        int64  `json:"time"`
+	Memory      int64  `json:"memory"`
+	RunTime     int64  `json:"run_time"`
+	Stdout      string `json:"stdout"`
+	Stderr      string `json:"stderr"`
 }
