@@ -4,6 +4,7 @@ import (
 	"OJ/app/models"
 	"OJ/pkg/global"
 	"OJ/pkg/utils"
+	"encoding/json"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -106,7 +107,22 @@ func UserSignIn(c *fiber.Ctx) error {
 			"msg":   err.Error(),
 		})
 	}
-
+	//将用户信息存入redis
+	userInfo, err := json.Marshal(foundedUser)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": true,
+			"msg":   err.Error(),
+		})
+	}
+	err = global.RedisDb.Set(foundedUser.UserAccount, userInfo, time.Hour*72).Err()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": true,
+			"msg":   err.Error(),
+		})
+	}
+	//设置cookie
 	c.Cookie(&fiber.Cookie{
 		Name:     "token",
 		Value:    tokens.Access,

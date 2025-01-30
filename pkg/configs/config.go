@@ -2,6 +2,7 @@ package configs
 
 import (
 	"OJ/pkg/global"
+	"OJ/platform/cache"
 	"OJ/platform/databases"
 	"log"
 
@@ -22,7 +23,7 @@ type Config struct {
 	}
 	JWT struct {
 		Secret        string
-		MinExpires     string
+		MinExpires    string
 		RefreshKey    string
 		RefreshExpire string
 	}
@@ -45,7 +46,7 @@ func InitConfig() {
 	}
 
 	// 初始化 Redis
-	//cache.InitRedis()
+	cache.InitRedis()
 
 	// 使用 AppConfig 中的配置初始化数据库
 	db, err := databases.InitDB(AppConfig.Database.Host, AppConfig.Database.User, AppConfig.Database.Password, AppConfig.Database.Name, AppConfig.Database.Port)
