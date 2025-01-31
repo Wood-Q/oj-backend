@@ -12,7 +12,7 @@ import (
 type Config struct {
 	App struct {
 		Name string
-		Port string
+		Addr string
 	}
 	Database struct {
 		Host     string
@@ -26,6 +26,11 @@ type Config struct {
 		MinExpires    string
 		RefreshKey    string
 		RefreshExpire string
+	}
+	Redis struct {
+		Host string
+		Port string
+		DB   int
 	}
 }
 
@@ -46,7 +51,7 @@ func InitConfig() {
 	}
 
 	// 初始化 Redis
-	cache.InitRedis()
+	cache.InitRedis(AppConfig.Redis.Host, AppConfig.Redis.Port, AppConfig.Redis.DB)
 
 	// 使用 AppConfig 中的配置初始化数据库
 	db, err := databases.InitDB(AppConfig.Database.Host, AppConfig.Database.User, AppConfig.Database.Password, AppConfig.Database.Name, AppConfig.Database.Port)

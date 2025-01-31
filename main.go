@@ -32,7 +32,7 @@ func main() {
 		TimeZone:   "Local",
 	}))
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://localhost:8080",
+		AllowOrigins:     "http://localhost:8080, http://frontend:8080",
 		AllowMethods:     "GET, POST, PUT, DELETE, OPTIONS",
 		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
 		AllowCredentials: true,
@@ -42,5 +42,5 @@ func main() {
 	routes.PublicQuestionRoutes(app)
 	routes.PublicAuthRoutes(app)
 	routes.SwaggerRoute(app)
-	app.Listen(configs.AppConfig.App.Port)
+	app.Listen(configs.AppConfig.App.Addr)
 }

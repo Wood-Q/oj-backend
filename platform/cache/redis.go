@@ -2,15 +2,16 @@ package cache
 
 import (
 	"OJ/pkg/global"
+	"fmt"
 
 	"github.com/go-redis/redis"
 	"github.com/gofiber/fiber/v2/log"
 )
 
-func InitRedis() {
+func InitRedis(addr,port string,db int) {
 	RedisClient := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		DB:       0, // use default DB
+		Addr:     fmt.Sprintf("%s:%s", addr, port),
+		DB:       db, // use default DB
 		Password: "",
 	})
 

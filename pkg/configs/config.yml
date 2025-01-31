@@ -1,9 +1,9 @@
 app:
   name: OJ
-  port: ":3000"
+  addr: ":3000"
 
 database:
-  host: localhost
+  host: db
   port: 5432
   user: postgres
   password: 246266262
@@ -17,3 +17,8 @@ jwt:
 
   sandbox:
     type: example
+
+redis:
+  host: redis
+  port: 6379
+  db: 0
